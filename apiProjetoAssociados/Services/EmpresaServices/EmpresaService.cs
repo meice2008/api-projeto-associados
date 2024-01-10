@@ -38,7 +38,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             //throw new NotImplementedException();
         }
 
-        public async Task<ServiceResponse<List<EmpresaModel>>> CreateEmpresa(EmpresaModel novaEmpresa)
+        public async Task<ServiceResponse<List<EmpresaModel>>> CreateEmpresa(EmpresaViewModel novaEmpresa)
         {
             ServiceResponse<List<EmpresaModel>> serviceResponse = new ServiceResponse<List<EmpresaModel>>();
 
@@ -53,8 +53,16 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                     return serviceResponse;
                 }
 
-                _context.Add(novaEmpresa);
-                await _context.SaveChangesAsync();
+                var empresa = new EmpresaModel()
+                {
+                    Nome = novaEmpresa.Nome,
+                    Cnpj = novaEmpresa.Cnpj
+                };
+
+                _context.Add(empresa);
+                _context.SaveChanges();
+
+                CadastrarSociedade(novaEmpresa.Id, novaEmpresa.Associados);
 
                 serviceResponse.Dados = _context.Empresas.ToList();
 
@@ -143,9 +151,9 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             ServiceResponse<List<EmpresaModel>> serviceResponse = new ServiceResponse<List<EmpresaModel>>();
 
             try
-            {                
+            {
 
-                EmpresaModel empresa = _context.Empresas.FirstOrDefault(x => x.Id == id);
+                EmpresaModel empresa = GetEmpresaById(id).Result.Dados;  //_context.Empresas.FirstOrDefault(x => x.Id == id);
 
                 if (empresa == null)
                 {
@@ -155,7 +163,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                 }
 
                 _context.Empresas.Remove(empresa);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
 
                 serviceResponse.Dados = _context.Empresas.ToList();
 
@@ -173,5 +181,68 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             //throw new NotImplementedException();
         }
+
+
+        private void CadastrarSociedade(int IdEmpresa, List<CheckBoxViewModel> sociedade)
+        {
+
+            try
+            {
+
+                foreach (var item in sociedade)
+                {
+
+                    if (item.Checked)
+                    {
+
+                        var associar = new AssociadoModelEmpresaModel()
+                        {
+                            EmpresaId = IdEmpresa,
+                            AssociadoId = item.Id
+                        };
+
+                        _context.AssociadosEmpresa.AddRange(associar);
+
+                    }
+                }
+
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private List<CheckBoxViewModel> GetAssociadosEmpresa(int IdEmpresa)
+        {
+            var lstAssociados = new List<CheckBoxViewModel>();
+
+            try
+            {
+
+                var AssociadosEmpresa = from c in _context.Associados
+                                        select new CheckBoxViewModel
+                                        {
+                                            Id = c.Id,
+                                            Nome = c.Nome,
+                                            Checked = _context.AssociadosEmpresa
+                                                        .Any(ce => ce.EmpresaId == IdEmpresa && ce.AssociadoId == c.Id)
+                                        };
+
+                lstAssociados = AssociadosEmpresa.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+            return lstAssociados;
+        }
+
+
     }
 }

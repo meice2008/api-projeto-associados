@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using apiProjetoAssociados.Models.AssociadoModels;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace apiProjetoAssociados.Models.EmpresaModels
@@ -15,6 +16,6 @@ namespace apiProjetoAssociados.Models.EmpresaModels
         [StringLength(14)]
         public string Cnpj { get; set; }
 
-        //public ICollection<AssociadoModel>? Associados { get; set; }
+        public ICollection<AssociadoModel>? Associados { get; set; }
     }
 }

@@ -1,12 +1,14 @@
 ﻿using apiProjetoAssociados.Models;
 using apiProjetoAssociados.Models.EmpresaModels;
 using apiProjetoAssociados.Services.EmpresaServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiProjetoAssociados.Controllers
 {
     [Route("api/[controller]")]
+    [AllowAnonymous]
     [ApiController]
     public class EmpresaController : ControllerBase
     {
@@ -32,9 +34,9 @@ namespace apiProjetoAssociados.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<EmpresaModel>>>> CreateEmpresa(EmpresaModel novaEmpresa)
+        public async Task<ActionResult<ServiceResponse<List<EmpresaModel>>>> CreateEmpresa(EmpresaViewModel empresa)
         {
-            var empresas = await _empresaInterface.CreateEmpresa(novaEmpresa);
+            var empresas = await _empresaInterface.CreateEmpresa(empresa);
             return Ok(empresas);
         }
 
@@ -45,7 +47,7 @@ namespace apiProjetoAssociados.Controllers
             return Ok(empresas);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<EmpresaModel>>>> DeleteEmpresa(int id)
         {
             ServiceResponse<List<EmpresaModel>> empresas = await _empresaInterface.DeleteEmpresa(id);

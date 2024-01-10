@@ -76,8 +76,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             return serviceResponse;
 
-
-
             //throw new NotImplementedException();
         }
 
@@ -167,7 +165,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
             }
 
             return serviceResponse;
-
 
 
             //throw new NotImplementedException();
