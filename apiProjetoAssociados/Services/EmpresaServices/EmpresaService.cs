@@ -62,7 +62,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                 _context.Add(empresa);
                 _context.SaveChanges();
 
-                CadastrarSociedade(novaEmpresa.Id, novaEmpresa.Associados);
+                CadastrarSociedade(empresa.Id, novaEmpresa.Associados);
 
                 serviceResponse.Dados = _context.Empresas.ToList();
 
@@ -84,7 +84,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             try
             {
-                EmpresaModel empresa = _context.Empresas.FirstOrDefault(x => x.Id == id);
+                EmpresaModel empresa = _context.Empresas.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
                 serviceResponse.Dados = empresa;
 
@@ -109,27 +109,47 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             //throw new NotImplementedException();
         }
                         
-        public async Task<ServiceResponse<List<EmpresaModel>>> UpdateEmpresa(EmpresaModel editadoEmpresa)
+        public async Task<ServiceResponse<EmpresaViewModel>> UpdateEmpresa(EmpresaViewModel editadoEmpresa)
         {
-            ServiceResponse<List<EmpresaModel>> serviceResponse = new ServiceResponse<List<EmpresaModel>>();
+            ServiceResponse<EmpresaViewModel> serviceResponse = new ServiceResponse<EmpresaViewModel>();
 
             try
             {
-                EmpresaModel empresa = _context.Empresas.AsNoTracking().FirstOrDefault(x => x.Id == editadoEmpresa.Id);
-                //EmpresaModel empresa = GetEmpresaById(editadoEmpresa.Id).Result.Dados;
+                //EmpresaModel empresa = _context.Empresas.AsNoTracking().FirstOrDefault(x => x.Id == editadoEmpresa.Id);
+                var empresaSelecionada = GetEmpresaById(editadoEmpresa.Id).Result.Dados;
 
-                if (empresa == null)
+                if (empresaSelecionada == null)
                 {
                     serviceResponse.Dados = null;
                     serviceResponse.Mensagem = "Empresa NÃO encontrada!";
                     serviceResponse.Sucesso = false;
+                    
+                    return serviceResponse;
+
                 }
 
-                _context.Empresas.Update(editadoEmpresa);
-                await _context.SaveChangesAsync();
+                empresaSelecionada.Nome = editadoEmpresa.Nome;
+                empresaSelecionada.Cnpj = editadoEmpresa.Cnpj;
 
-                serviceResponse.Dados = _context.Empresas.ToList();
+                _context.Empresas.Update(empresaSelecionada);
+                _context.SaveChanges();
 
+                var associadosEmpresa = GetEmpresasAssociado().Result;
+
+                foreach (var item in associadosEmpresa)
+                {
+                    if (item.EmpresaId == editadoEmpresa.Id)
+                    {
+                        _context.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    }
+                }
+
+                CadastrarSociedade(editadoEmpresa.Id, editadoEmpresa.Associados);
+                
+
+                //serviceResponse.Dados = _context.Empresas.ToList();
+
+                serviceResponse.Dados = editadoEmpresa;
 
             }
             catch (Exception ex)
@@ -145,6 +165,11 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             //throw new NotImplementedException();
         }
 
+        private async Task<IEnumerable<AssociadoModelEmpresaModel>> GetEmpresasAssociado()
+        {
+            var associadosEmpresa = _context.AssociadosEmpresa;
+            return associadosEmpresa;
+        }
 
         public async Task<ServiceResponse<List<EmpresaModel>>> DeleteEmpresa(int id)
         {
@@ -215,7 +240,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             }
         }
 
-        private List<CheckBoxViewModel> GetAssociadosEmpresa(int IdEmpresa)
+        public  List<CheckBoxViewModel> GetAssociadosEmpresa(int IdEmpresa)
         {
             var lstAssociados = new List<CheckBoxViewModel>();
 

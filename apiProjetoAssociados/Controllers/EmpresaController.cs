@@ -40,10 +40,11 @@ namespace apiProjetoAssociados.Controllers
             return Ok(empresas);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ServiceResponse<List<EmpresaModel>>>> UpdateEmpresa(EmpresaModel novaEmpresa)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ServiceResponse<EmpresaViewModel>>> UpdateEmpresa(int id, EmpresaViewModel editadoEmpresa)
         {
-            ServiceResponse<List<EmpresaModel>> empresas = await _empresaInterface.UpdateEmpresa(novaEmpresa);
+            editadoEmpresa.Id = id;
+            ServiceResponse<EmpresaViewModel> empresas = await _empresaInterface.UpdateEmpresa(editadoEmpresa);
             return Ok(empresas);
         }
 

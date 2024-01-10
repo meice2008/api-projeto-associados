@@ -8,7 +8,8 @@ namespace apiProjetoAssociados.Services.EmpresaServices
         Task<ServiceResponse<List<EmpresaModel>>> GetEmpresas();
         Task<ServiceResponse<EmpresaModel>> GetEmpresaById(int id);
         Task<ServiceResponse<List<EmpresaModel>>> CreateEmpresa(EmpresaViewModel novaEmpresa);        
-        Task<ServiceResponse<List<EmpresaModel>>> UpdateEmpresa(EmpresaModel editadoEmpresa);
+        Task<ServiceResponse<EmpresaViewModel>> UpdateEmpresa(EmpresaViewModel editadoEmpresa);
         Task<ServiceResponse<List<EmpresaModel>>> DeleteEmpresa(int id);
+
     }
 }
