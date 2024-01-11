@@ -26,6 +26,20 @@ namespace apiProjetoAssociados.Controllers
             return Ok(empresas);
         }
 
+        [HttpGet("GetEmpresasAssociado")]
+        public async Task<ServiceResponse<List<AssociadoModelEmpresaModel>>> GetEmpresasAssociado()
+        {
+            var resultado = await _empresaInterface.GetEmpresasAssociado();
+            return resultado;
+        }
+
+        [HttpGet("GetAssociadosEmpresa/{idEmpresa}")]
+        public async Task<ActionResult<ServiceResponse<List<CheckBoxViewModel>>>> GetAssociadosEmpresa(int IdEmpresa)
+        {
+            ServiceResponse<List<CheckBoxViewModel>> resultado = await _empresaInterface.GetAssociadosEmpresa(IdEmpresa);
+            return Ok(resultado);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<EmpresaModel>>> GetEmpresaById(int id)
         {

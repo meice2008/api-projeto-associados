@@ -14,6 +14,30 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             _context = context;
         }
 
+        public async Task<ServiceResponse<List<AssociadoModelEmpresaModel>>> GetEmpresasAssociado()
+        {
+            
+            var serviceResponse = new ServiceResponse<List<AssociadoModelEmpresaModel>>();
+            
+            try
+            {
+            
+                serviceResponse.Dados = _context.AssociadosEmpresa.ToList();
+            
+            }
+            catch(Exception ex)
+            {
+                serviceResponse.Mensagem = ex.Message;
+                serviceResponse.Sucesso = false;
+            }
+
+            return serviceResponse;
+
+            //var associadosEmpresa = _context.AssociadosEmpresa;
+            //return associadosEmpresa.ToList();
+
+        }
+
         public async Task<ServiceResponse<List<EmpresaModel>>> GetEmpresas()
         {
             ServiceResponse<List<EmpresaModel>> serviceResponse = new ServiceResponse<List<EmpresaModel>>();
@@ -134,7 +158,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                 _context.Empresas.Update(empresaSelecionada);
                 _context.SaveChanges();
 
-                var associadosEmpresa = GetEmpresasAssociado().Result;
+                var associadosEmpresa = GetEmpresasAssociado().Result.Dados;
 
                 foreach (var item in associadosEmpresa)
                 {
@@ -164,13 +188,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             //throw new NotImplementedException();
         }
-
-        private async Task<IEnumerable<AssociadoModelEmpresaModel>> GetEmpresasAssociado()
-        {
-            var associadosEmpresa = _context.AssociadosEmpresa;
-            return associadosEmpresa;
-        }
-
+        
         public async Task<ServiceResponse<List<EmpresaModel>>> DeleteEmpresa(int id)
         {
             ServiceResponse<List<EmpresaModel>> serviceResponse = new ServiceResponse<List<EmpresaModel>>();
@@ -240,8 +258,10 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             }
         }
 
-        public  List<CheckBoxViewModel> GetAssociadosEmpresa(int IdEmpresa)
+        public async Task<ServiceResponse<List<CheckBoxViewModel>>> GetAssociadosEmpresa(int IdEmpresa)
         {
+
+            var response = new ServiceResponse<List<CheckBoxViewModel>>();
             var lstAssociados = new List<CheckBoxViewModel>();
 
             try
@@ -257,6 +277,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                                         };
 
                 lstAssociados = AssociadosEmpresa.ToList();
+                response.Dados = lstAssociados;
 
             }
             catch (Exception ex)
@@ -265,7 +286,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             }
 
 
-            return lstAssociados;
+            return response;
         }
 
 
