@@ -21,36 +21,44 @@ namespace apiProjetoAssociados.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<AssociadoModel>>>> GetAssociados()
         {
-            var Associados = await _AssociadoInterface.GetAssociados();
-            return Ok(Associados);
+            var serviceResponse = await _AssociadoInterface.GetAssociados();
+            return Ok(serviceResponse);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<AssociadoModel>>> GetAssociadoById(int id)
         {
-            ServiceResponse<AssociadoModel> serviceResponse = await _AssociadoInterface.GetAssociadoById(id);
+            var serviceResponse = await _AssociadoInterface.GetAssociadoById(id);
             return Ok(serviceResponse);
         }
 
+        [HttpGet("GetEmpresasAssociado/{IdAssociado}")]
+        public async Task<ActionResult<ServiceResponse<List<CheckBoxViewModel>>>> GetEmpresasAssociado(int IdAssociado)
+        {
+            ServiceResponse<List<CheckBoxViewModel>> resultado = await _AssociadoInterface.GetEmpresasAssociado(IdAssociado);
+            return Ok(resultado);
+        }
+
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<AssociadoModel>>>> CreateAssociado(AssociadoModel novaAssociado)
+        public async Task<ActionResult<ServiceResponse<List<AssociadoModel>>>> CreateAssociado(AssociadoViewModel novaAssociado)
         {
-            var Associados = await _AssociadoInterface.CreateAssociado(novaAssociado);
-            return Ok(Associados);
+            var serviceResponse = await _AssociadoInterface.CreateAssociado(novaAssociado);
+            return Ok(serviceResponse);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ServiceResponse<List<AssociadoModel>>>> UpdateAssociado(AssociadoModel novaAssociado)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ServiceResponse<AssociadoViewModel>>> UpdateAssociado(int id, AssociadoViewModel editadoAssociado)
         {
-            ServiceResponse<List<AssociadoModel>> Associados = await _AssociadoInterface.UpdateAssociado(novaAssociado);
-            return Ok(Associados);
+            editadoAssociado.Id = id;
+            var serviceResponse = await _AssociadoInterface.UpdateAssociado(editadoAssociado);
+            return Ok(serviceResponse);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<AssociadoModel>>>> DeleteAssociado(int id)
         {
-            ServiceResponse<List<AssociadoModel>> Associados = await _AssociadoInterface.DeleteAssociado(id);
-            return Ok(Associados);
+            var serviceResponse = await _AssociadoInterface.DeleteAssociado(id);
+            return Ok(serviceResponse);
         }
     }
 }

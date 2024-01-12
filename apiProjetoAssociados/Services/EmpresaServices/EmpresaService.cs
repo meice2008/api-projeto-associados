@@ -2,7 +2,6 @@
 using apiProjetoAssociados.Models;
 using apiProjetoAssociados.Models.EmpresaModels;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace apiProjetoAssociados.Services.EmpresaServices
 {
@@ -170,7 +169,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
                 CadastrarSociedade(editadoEmpresa.Id, editadoEmpresa.Associados);
                 
-
                 //serviceResponse.Dados = _context.Empresas.ToList();
 
                 serviceResponse.Dados = editadoEmpresa;

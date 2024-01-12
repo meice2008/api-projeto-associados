@@ -2,7 +2,6 @@
 using apiProjetoAssociados.Models.EmpresaModels;
 using apiProjetoAssociados.Services.EmpresaServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiProjetoAssociados.Controllers

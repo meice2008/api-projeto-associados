@@ -1,19 +1,21 @@
 ﻿using apiProjetoAssociados.Data;
 using apiProjetoAssociados.Models;
 using apiProjetoAssociados.Models.AssociadoModels;
-using Microsoft.EntityFrameworkCore;
+using apiProjetoAssociados.Services.EmpresaServices;
 
 namespace apiProjetoAssociados.Services.AssociadoService
 {
     public class AssociadoService : IAssociadoService
     {
         private readonly ApplicationDbContext _context;
-        public AssociadoService(ApplicationDbContext context)
+        private readonly IEmpresaService _empresaService;
+        public AssociadoService(ApplicationDbContext context, IEmpresaService empresaService)
         {
             _context = context;
+            _empresaService = empresaService;
         }
 
-        public async Task<ServiceResponse<List<AssociadoModel>>> CreateAssociado(AssociadoModel novaAssociado)
+        public async Task<ServiceResponse<List<AssociadoModel>>> CreateAssociado(AssociadoViewModel novaAssociado)
         {
             ServiceResponse<List<AssociadoModel>> serviceResponse = new ServiceResponse<List<AssociadoModel>>();
 
@@ -28,8 +30,17 @@ namespace apiProjetoAssociados.Services.AssociadoService
                     return serviceResponse;
                 }
 
-                _context.Add(novaAssociado);
-                await _context.SaveChangesAsync();
+                var associado = new AssociadoModel()
+                {
+                    Nome = novaAssociado.Nome,
+                    Cpf = novaAssociado.Cpf
+                    //DtNascimento = novaAssociado.DtNascimento
+                };
+
+                _context.Add(associado);
+                _context.SaveChanges();
+
+                CadastrarSociedade(associado.Id, novaAssociado.Empresas);
 
                 serviceResponse.Dados = _context.Associados.ToList();
 
@@ -51,8 +62,8 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             try
             {
-
-                AssociadoModel Associado = _context.Associados.FirstOrDefault(x => x.Id == id);
+                AssociadoModel Associado = GetAssociadoById(id).Result.Dados;
+                //AssociadoModel Associado = _context.Associados.FirstOrDefault(x => x.Id == id);
 
                 if (Associado == null)
                 {
@@ -62,7 +73,7 @@ namespace apiProjetoAssociados.Services.AssociadoService
                 }
 
                 _context.Associados.Remove(Associado);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
 
                 serviceResponse.Dados = _context.Associados.ToList();
 
@@ -135,27 +146,44 @@ namespace apiProjetoAssociados.Services.AssociadoService
             //throw new NotImplementedException();
         }
 
-        public async Task<ServiceResponse<List<AssociadoModel>>> UpdateAssociado(AssociadoModel editadoAssociado)
+        public async Task<ServiceResponse<AssociadoViewModel>> UpdateAssociado(AssociadoViewModel editadoAssociado)
         {
-            ServiceResponse<List<AssociadoModel>> serviceResponse = new ServiceResponse<List<AssociadoModel>>();
+            var serviceResponse = new ServiceResponse<AssociadoViewModel>();
 
             try
             {
-                AssociadoModel Associado = _context.Associados.AsNoTracking().FirstOrDefault(x => x.Id == editadoAssociado.Id);
-                //AssociadoModel Associado = GetAssociadoById(editadoAssociado.Id).Result.Dados;
+                //AssociadoModel Associado = _context.Associados.AsNoTracking().FirstOrDefault(x => x.Id == editadoAssociado.Id);
+                AssociadoModel associadoSelecionado = GetAssociadoById(editadoAssociado.Id).Result.Dados;
 
-                if (Associado == null)
+                if (associadoSelecionado == null)
                 {
                     serviceResponse.Dados = null;
                     serviceResponse.Mensagem = "Associado NÃO encontrada!";
                     serviceResponse.Sucesso = false;
+
+                    return serviceResponse;
                 }
 
-                _context.Associados.Update(editadoAssociado);
-                await _context.SaveChangesAsync();
+                associadoSelecionado.Nome = editadoAssociado.Nome;
+                associadoSelecionado.Cpf = editadoAssociado.Cpf;
+                //associadoSelecionado.DtNascimento = editadoAssociado.DtNascimento;
 
-                serviceResponse.Dados = _context.Associados.ToList();
+                _context.Associados.Update(associadoSelecionado);
+                _context.SaveChanges();
 
+                var associadosEmpresa = _empresaService.GetEmpresasAssociado().Result.Dados;
+
+                foreach (var item in associadosEmpresa)
+                {
+                    if (item.AssociadoId == editadoAssociado.Id)
+                    {
+                        _context.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                    }
+                }
+
+                CadastrarSociedade(editadoAssociado.Id, editadoAssociado.Empresas);
+
+                serviceResponse.Dados = editadoAssociado;
 
             }
             catch (Exception ex)
@@ -169,5 +197,68 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             //throw new NotImplementedException();
         }
+
+        private void CadastrarSociedade(int IdAssociado, List<CheckBoxViewModel> sociedade)
+        {
+
+            try
+            {
+
+                foreach (var item in sociedade)
+                {
+
+                    if (item.Checked)
+                    {
+
+                        var associar = new AssociadoModelEmpresaModel()
+                        {
+                            EmpresaId = item.Id,
+                            AssociadoId = IdAssociado
+                        };
+
+                        _context.AssociadosEmpresa.AddRange(associar);
+
+                    }
+                }
+
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<ServiceResponse<List<CheckBoxViewModel>>> GetEmpresasAssociado(int IdAssociado)
+        {
+
+            var response = new ServiceResponse<List<CheckBoxViewModel>>();
+            var lstEmpresas = new List<CheckBoxViewModel>();
+
+            try
+            {
+
+                var empresasAssociado = from c in _context.Empresas
+                                        select new CheckBoxViewModel
+                                        {
+                                            Id = c.Id,
+                                            Nome = c.Nome,
+                                            Checked = _context.AssociadosEmpresa
+                                                        .Any(ce => ce.AssociadoId == IdAssociado && ce.EmpresaId == c.Id)
+                                        };
+
+                lstEmpresas = empresasAssociado.ToList();
+                response.Dados = lstEmpresas;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return response;
+        }
+
     }
 }
