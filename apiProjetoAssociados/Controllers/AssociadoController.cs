@@ -35,7 +35,7 @@ namespace apiProjetoAssociados.Controllers
         [HttpGet("GetEmpresasAssociado/{IdAssociado}")]
         public async Task<ActionResult<ServiceResponse<List<CheckBoxViewModel>>>> GetEmpresasAssociado(int IdAssociado)
         {
-            ServiceResponse<List<CheckBoxViewModel>> resultado = await _AssociadoInterface.GetEmpresasAssociado(IdAssociado);
+            var resultado = await _AssociadoInterface.GetEmpresasAssociado(IdAssociado);
             return Ok(resultado);
         }
 

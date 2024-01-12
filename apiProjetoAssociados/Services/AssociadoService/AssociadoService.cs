@@ -53,7 +53,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             return serviceResponse;
 
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<List<AssociadoModel>>> DeleteAssociado(int id)
@@ -63,7 +62,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
             try
             {
                 AssociadoModel Associado = GetAssociadoById(id).Result.Dados;
-                //AssociadoModel Associado = _context.Associados.FirstOrDefault(x => x.Id == id);
 
                 if (Associado == null)
                 {
@@ -87,7 +85,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             return serviceResponse;
 
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<AssociadoModel>> GetAssociadoById(int id)
@@ -116,9 +113,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             return serviceResponse;
 
-
-
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<List<AssociadoModel>>> GetAssociados()
@@ -143,16 +137,14 @@ namespace apiProjetoAssociados.Services.AssociadoService
 
             return serviceResponse;
 
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<AssociadoViewModel>> UpdateAssociado(AssociadoViewModel editadoAssociado)
         {
-            var serviceResponse = new ServiceResponse<AssociadoViewModel>();
+            ServiceResponse<AssociadoViewModel> serviceResponse = new ServiceResponse<AssociadoViewModel>();
 
             try
             {
-                //AssociadoModel Associado = _context.Associados.AsNoTracking().FirstOrDefault(x => x.Id == editadoAssociado.Id);
                 AssociadoModel associadoSelecionado = GetAssociadoById(editadoAssociado.Id).Result.Dados;
 
                 if (associadoSelecionado == null)
@@ -195,7 +187,6 @@ namespace apiProjetoAssociados.Services.AssociadoService
             return serviceResponse;
 
 
-            //throw new NotImplementedException();
         }
 
         private void CadastrarSociedade(int IdAssociado, List<CheckBoxViewModel> sociedade)
@@ -233,8 +224,8 @@ namespace apiProjetoAssociados.Services.AssociadoService
         public async Task<ServiceResponse<List<CheckBoxViewModel>>> GetEmpresasAssociado(int IdAssociado)
         {
 
-            var response = new ServiceResponse<List<CheckBoxViewModel>>();
-            var lstEmpresas = new List<CheckBoxViewModel>();
+            ServiceResponse<List<CheckBoxViewModel>> response = new ServiceResponse<List<CheckBoxViewModel>>();
+            List<CheckBoxViewModel> lstEmpresas = new List<CheckBoxViewModel>();
 
             try
             {

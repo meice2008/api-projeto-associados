@@ -35,14 +35,14 @@ namespace apiProjetoAssociados.Controllers
         [HttpGet("GetAssociadosEmpresa/{idEmpresa}")]
         public async Task<ActionResult<ServiceResponse<List<CheckBoxViewModel>>>> GetAssociadosEmpresa(int IdEmpresa)
         {
-            ServiceResponse<List<CheckBoxViewModel>> resultado = await _empresaInterface.GetAssociadosEmpresa(IdEmpresa);
+            var resultado = await _empresaInterface.GetAssociadosEmpresa(IdEmpresa);
             return Ok(resultado);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<EmpresaModel>>> GetEmpresaById(int id)
         {
-            ServiceResponse<EmpresaModel> serviceResponse = await _empresaInterface.GetEmpresaById(id);
+            var serviceResponse = await _empresaInterface.GetEmpresaById(id);
             return Ok(serviceResponse);
         }
 
@@ -57,14 +57,14 @@ namespace apiProjetoAssociados.Controllers
         public async Task<ActionResult<ServiceResponse<EmpresaViewModel>>> UpdateEmpresa(int id, EmpresaViewModel editadoEmpresa)
         {
             editadoEmpresa.Id = id;
-            ServiceResponse<EmpresaViewModel> empresas = await _empresaInterface.UpdateEmpresa(editadoEmpresa);
+            var empresas = await _empresaInterface.UpdateEmpresa(editadoEmpresa);
             return Ok(empresas);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<EmpresaModel>>>> DeleteEmpresa(int id)
         {
-            ServiceResponse<List<EmpresaModel>> empresas = await _empresaInterface.DeleteEmpresa(id);
+            var empresas = await _empresaInterface.DeleteEmpresa(id);
             return Ok(empresas);
         }
 

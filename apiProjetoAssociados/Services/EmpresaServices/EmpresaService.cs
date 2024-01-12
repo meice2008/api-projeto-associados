@@ -15,8 +15,8 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
         public async Task<ServiceResponse<List<AssociadoModelEmpresaModel>>> GetEmpresasAssociado()
         {
-            
-            var serviceResponse = new ServiceResponse<List<AssociadoModelEmpresaModel>>();
+
+            ServiceResponse<List<AssociadoModelEmpresaModel>> serviceResponse = new ServiceResponse<List<AssociadoModelEmpresaModel>>();
             
             try
             {
@@ -32,8 +32,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             return serviceResponse;
 
-            //var associadosEmpresa = _context.AssociadosEmpresa;
-            //return associadosEmpresa.ToList();
 
         }
 
@@ -58,7 +56,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             return serviceResponse;
 
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<List<EmpresaModel>>> CreateEmpresa(EmpresaViewModel novaEmpresa)
@@ -98,7 +95,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             return serviceResponse;
 
-            //throw new NotImplementedException();
         }
 
         public async Task<ServiceResponse<EmpresaModel>> GetEmpresaById(int id)
@@ -127,9 +123,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             return serviceResponse;
 
-
-
-            //throw new NotImplementedException();
         }
                         
         public async Task<ServiceResponse<EmpresaViewModel>> UpdateEmpresa(EmpresaViewModel editadoEmpresa)
@@ -138,7 +131,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             try
             {
-                //EmpresaModel empresa = _context.Empresas.AsNoTracking().FirstOrDefault(x => x.Id == editadoEmpresa.Id);
                 var empresaSelecionada = GetEmpresaById(editadoEmpresa.Id).Result.Dados;
 
                 if (empresaSelecionada == null)
@@ -167,9 +159,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
                     }
                 }
 
-                CadastrarSociedade(editadoEmpresa.Id, editadoEmpresa.Associados);
-                
-                //serviceResponse.Dados = _context.Empresas.ToList();
+                CadastrarSociedade(editadoEmpresa.Id, editadoEmpresa.Associados);                
 
                 serviceResponse.Dados = editadoEmpresa;
 
@@ -181,10 +171,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             }
 
             return serviceResponse;
-
-
-
-            //throw new NotImplementedException();
         }
         
         public async Task<ServiceResponse<List<EmpresaModel>>> DeleteEmpresa(int id)
@@ -194,7 +180,7 @@ namespace apiProjetoAssociados.Services.EmpresaServices
             try
             {
 
-                EmpresaModel empresa = GetEmpresaById(id).Result.Dados;  //_context.Empresas.FirstOrDefault(x => x.Id == id);
+                EmpresaModel empresa = GetEmpresaById(id).Result.Dados;  
 
                 if (empresa == null)
                 {
@@ -218,9 +204,6 @@ namespace apiProjetoAssociados.Services.EmpresaServices
 
             return serviceResponse;
 
-
-
-            //throw new NotImplementedException();
         }
 
 
@@ -259,8 +242,8 @@ namespace apiProjetoAssociados.Services.EmpresaServices
         public async Task<ServiceResponse<List<CheckBoxViewModel>>> GetAssociadosEmpresa(int IdEmpresa)
         {
 
-            var response = new ServiceResponse<List<CheckBoxViewModel>>();
-            var lstAssociados = new List<CheckBoxViewModel>();
+            ServiceResponse<List<CheckBoxViewModel>> response = new ServiceResponse<List<CheckBoxViewModel>>();
+            List<CheckBoxViewModel> lstAssociados = new List<CheckBoxViewModel>();
 
             try
             {
